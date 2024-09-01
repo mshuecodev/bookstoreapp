@@ -1,40 +1,42 @@
-import React, { useState, useRef, useEffect } from "react"
-import { Animated, View, StyleSheet, Dimensions } from "react-native"
-import { Text, Avatar, Tab, TabView, Image } from "@rneui/themed"
+import React, { useRef, useState, useEffect } from "react"
+import { Animated, View, StyleSheet, FlatList, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from "react-native"
+import { Text, Avatar, Tab, Image } from "@rneui/themed"
 
-const genres = ["Popular", "Romance", "Fanfiction", "Poetry"]
+const genres: string[] = ["Popular", "Romance", "Fanfiction", "Poetry"]
+const books: string[] = ["https://danbrown.com/wp-content/uploads/2016/09/Thumb2Tall.jpg", "https://danbrown.com/wp-content/uploads/2017/06/US_Big.jpg", "https://danbrown.com/wp-content/themes/danbrown/images/db/books.02.jpg", "https://danbrown.com/wp-content/uploads/2013/01/robert-langdon-thriller-title-image.jpg"]
 const screenWidth = Dimensions.get("window").width
+const ITEM_WIDTH = 200
+const ITEM_SPACING = 20
 
-export default function HomeScreen() {
-	const [index, setIndex] = useState(0)
-	const scaleAnimations = genres.map(() => useRef(new Animated.Value(1)).current)
+const HomeScreen: React.FC = () => {
+	const [index, setIndex] = useState<number>(0)
+	const scrollX = useRef(new Animated.Value(0)).current
+	const flatListRef = useRef<FlatList<string>>(null)
 
-	// Function to handle scaling animation when the tab changes
-	const handleTabChange = (newIndex) => {
-		// Animate scale of current active image back to normal
-		Animated.timing(scaleAnimations[index], {
-			toValue: 1,
-			duration: 200,
-			useNativeDriver: true
-		}).start(() => {
-			// Update the index and animate the new active image
-			setIndex(newIndex)
-			Animated.timing(scaleAnimations[newIndex], {
-				toValue: 1.1,
-				duration: 300,
-				useNativeDriver: true
-			}).start()
+	const handleTabChange = (newIndex: number) => {
+		setIndex(newIndex)
+		flatListRef.current?.scrollToOffset({
+			offset: newIndex * (ITEM_WIDTH + ITEM_SPACING),
+			animated: true
 		})
 	}
 
+	const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+		scrollX.setValue(event.nativeEvent.contentOffset.x)
+	}
+
 	useEffect(() => {
-		// Set initial scale animation for the first active image
-		Animated.timing(scaleAnimations[0], {
-			toValue: 1.1,
-			duration: 300,
-			useNativeDriver: true
-		}).start()
-	}, [])
+		const listenerId = scrollX.addListener(({ value }) => {
+			const newIndex = Math.floor(value / (ITEM_WIDTH + ITEM_SPACING))
+			if (newIndex !== index && newIndex >= 0 && newIndex < genres.length) {
+				setIndex(newIndex)
+			}
+		})
+
+		return () => {
+			scrollX.removeListener(listenerId)
+		}
+	}, [index, scrollX])
 
 	return (
 		<View style={styles.container}>
@@ -48,13 +50,11 @@ export default function HomeScreen() {
 				/>
 			</View>
 
-			{/* Tabs to switch between views */}
 			<Tab
 				value={index}
 				onChange={handleTabChange}
 				scrollable
 				disableIndicator
-				style={{ margin: 10 }}
 			>
 				{genres.map((row, i) => (
 					<Tab.Item
@@ -72,30 +72,36 @@ export default function HomeScreen() {
 				))}
 			</Tab>
 
-			{/* Ensuring the TabView is positioned below the tabs */}
-			<View style={styles.tabViewWrapper}>
-				<TabView
-					value={index}
-					onChange={handleTabChange}
-					animationType="timing"
-				>
-					{genres.map((row, i) => (
-						<TabView.Item
-							key={row}
-							style={styles.tabViewItem}
-						>
-							<Animated.View style={[styles.animatedImageContainer, { transform: [{ scale: scaleAnimations[i] }] }]}>
-								<Image
-									source={{
-										uri: "https://danbrown.com/wp-content/uploads/2017/06/US_Big.jpg"
-									}}
-									style={styles.image}
-								/>
-							</Animated.View>
-						</TabView.Item>
-					))}
-				</TabView>
-			</View>
+			<Animated.FlatList
+				ref={flatListRef}
+				data={books}
+				keyExtractor={(item) => item}
+				horizontal
+				showsHorizontalScrollIndicator={false}
+				contentContainerStyle={styles.flatListContainer}
+				renderItem={({ item, index: itemIndex }) => {
+					const scale = scrollX.interpolate({
+						inputRange: [(itemIndex - 1) * (ITEM_WIDTH + ITEM_SPACING), itemIndex * (ITEM_WIDTH + ITEM_SPACING), (itemIndex + 1) * (ITEM_WIDTH + ITEM_SPACING)],
+						outputRange: [0.9, 1.1, 0.9],
+						extrapolate: "clamp"
+					})
+
+					return (
+						<Animated.View style={[styles.imageContainer, { transform: [{ scale }] }]}>
+							<Image
+								source={{ uri: item }}
+								style={styles.image}
+								resizeMode="cover"
+							/>
+						</Animated.View>
+					)
+				}}
+				onScroll={handleScroll}
+				scrollEventThrottle={16}
+				snapToInterval={ITEM_WIDTH + ITEM_SPACING}
+				decelerationRate="fast"
+				bounces={false}
+			/>
 		</View>
 	)
 }
@@ -103,7 +109,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
 	container: {
 		padding: 8,
-		flex: 1 // To ensure the layout expands correctly
+		flex: 1,
+		backgroundColor: "#fff"
 	},
 	titleContainer: {
 		flexDirection: "row",
@@ -113,22 +120,26 @@ const styles = StyleSheet.create({
 	avatarBG: {
 		backgroundColor: "#2fc7b8"
 	},
-	tabViewWrapper: {
-		flex: 1, // Ensures TabView takes remaining space below the tabs
-		marginTop: 10 // Adjust as needed to add spacing below tabs
+	flatListContainer: {
+		marginVertical: 20,
+		paddingHorizontal: (screenWidth - ITEM_WIDTH) / 2
 	},
-	tabViewItem: {
-		width: screenWidth, // Ensures each item takes full screen width
-		justifyContent: "flex-start", // Aligns TabView items at the top
-		alignItems: "center" // Centers content horizontally
-	},
-	animatedImageContainer: {
+	imageContainer: {
+		width: ITEM_WIDTH,
+		height: 300,
+		borderRadius: 20,
+		marginHorizontal: ITEM_SPACING / 2,
 		justifyContent: "center",
-		alignItems: "center"
+		alignItems: "center",
+		backgroundColor: "#f0f0f0",
+		borderColor: "#ff0000", // Debug border color
+		borderWidth: 2 // Debug border width
 	},
 	image: {
-		width: 200,
-		height: 300,
+		width: ITEM_WIDTH, // Explicit width
+		height: 300, // Explicit height
 		borderRadius: 20
 	}
 })
+
+export default HomeScreen
