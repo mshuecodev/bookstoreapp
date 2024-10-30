@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme } from "@react-navigation/native"
+// import { DarkTheme, DefaultTheme } from "@react-navigation/native"
 import { ThemeProvider, createTheme } from "@rneui/themed"
 import { useFonts } from "expo-font"
 import { Stack } from "expo-router"

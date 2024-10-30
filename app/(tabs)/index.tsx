@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react"
 import { Animated, View, StyleSheet, FlatList, Dimensions, NativeSyntheticEvent, NativeScrollEvent, ScrollView } from "react-native"
-import { Text, Avatar, Tab, Image, Button } from "@rneui/themed"
+import { Text, Avatar, Tab, Image, Button, ListItem } from "@rneui/themed"
 import CardHorizontal from "@/components/CardHorizontal"
 
 const genres: string[] = ["Popular", "Romance", "Fanfiction", "Poetry"]
@@ -11,6 +11,8 @@ const ITEM_SPACING = 20
 
 const HomeScreen: React.FC = () => {
 	const [index, setIndex] = useState<number>(0)
+	const [expanded, setExpanded] = useState<boolean>(false)
+
 	const scrollX = useRef(new Animated.Value(0)).current
 	const flatListRef = useRef<FlatList<string>>(null)
 
@@ -43,12 +45,29 @@ const HomeScreen: React.FC = () => {
 		<ScrollView style={styles.container}>
 			<View style={styles.titleContainer}>
 				<Text h1>Read your favorite Book</Text>
-				<Avatar
-					title="M"
-					size={"medium"}
-					rounded
-					containerStyle={styles.avatarBG}
-				/>
+				<View>
+					<ListItem.Accordion
+						content={
+							<Avatar
+								title="M"
+								size={"medium"}
+								rounded
+								containerStyle={styles.avatarBG}
+							/>
+						}
+						isExpanded={expanded}
+						onPress={() => {
+							setExpanded(!expanded)
+						}}
+					>
+						<ListItem>
+							<ListItem.Content>
+								<ListItem.Title>Logout</ListItem.Title>
+							</ListItem.Content>
+							<ListItem.Chevron />
+						</ListItem>
+					</ListItem.Accordion>
+				</View>
 			</View>
 
 			<View style={styles.section}>
