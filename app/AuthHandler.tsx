@@ -7,10 +7,12 @@ export default function AuthHandler() {
 	const router = useRouter()
 	const [mounted, setMounted] = useState(false)
 
+	// Set the mounted state to true once the component has rendered
 	useEffect(() => {
 		setMounted(true) // Set mounted to true once the component has rendered
 	}, [])
 
+	// Redirect based on user state only after the layout has mounted
 	useEffect(() => {
 		if (mounted) {
 			// Ensure navigation only after mounted
