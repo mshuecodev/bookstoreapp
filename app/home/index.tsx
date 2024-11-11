@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react"
 import { Animated, View, StyleSheet, FlatList, Dimensions, NativeSyntheticEvent, NativeScrollEvent, ScrollView } from "react-native"
 import { Text, Avatar, Tab, Image, Button, ListItem } from "@rneui/themed"
 import CardHorizontal from "@/components/CardHorizontal"
+import { useNavigation } from "@react-navigation/native"
 
 const genres: string[] = ["Popular", "Romance", "Fanfiction", "Poetry"]
 const books: string[] = ["https://danbrown.com/wp-content/uploads/2016/09/Thumb2Tall.jpg", "https://danbrown.com/wp-content/uploads/2017/06/US_Big.jpg", "https://danbrown.com/wp-content/themes/danbrown/images/db/books.02.jpg", "https://danbrown.com/wp-content/uploads/2013/01/robert-langdon-thriller-title-image.jpg"]
@@ -10,6 +11,8 @@ const ITEM_WIDTH = 200
 const ITEM_SPACING = 20
 
 const HomeScreen: React.FC = () => {
+	const navigation = useNavigation()
+
 	const [index, setIndex] = useState<number>(0)
 	const [expanded, setExpanded] = useState<boolean>(false)
 
@@ -110,6 +113,7 @@ const HomeScreen: React.FC = () => {
 						return (
 							<Animated.View style={[styles.imageContainer, { transform: [{ scale }] }]}>
 								<Image
+									onPress={() => navigation.navigate("DetailBook")}
 									source={{ uri: item }}
 									style={styles.image}
 									resizeMode="cover"
