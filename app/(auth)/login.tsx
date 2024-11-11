@@ -1,5 +1,7 @@
 import { useAuth } from "@/context/AuthContext"
 import { Button, Text, View } from "react-native"
+import { TextInput } from "react-native-paper"
+import styles from "./styles"
 
 export default function LoginScreen() {
 	const { login } = useAuth()
@@ -10,8 +12,17 @@ export default function LoginScreen() {
 	}
 
 	return (
-		<View>
-			<Text>Login Screen</Text>
+		<View style={styles.container}>
+			<TextInput
+				label="Username"
+				//   value={text}
+				//   onChangeText={text => setText(text)}
+			/>
+			<TextInput
+				label="Password"
+				//   value={text}
+				//   onChangeText={text => setText(text)}
+			/>
 			<Button
 				title="Login"
 				onPress={handleLogin}
