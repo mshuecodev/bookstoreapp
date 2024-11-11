@@ -1,44 +1,46 @@
 import React from "react"
-import { View, StyleSheet, Text, Image } from "react-native"
+import { View, StyleSheet, Text, Image, TouchableWithoutFeedback } from "react-native"
 import { Card, Icon } from "@rneui/themed"
 
-function CardHorizontal({ img }) {
+function CardHorizontal({ img, onPress }) {
 	return (
 		<Card containerStyle={styles.card}>
-			<View style={styles.content}>
-				<Image
-					source={{ uri: img }}
-					style={styles.image}
-					resizeMode="cover"
-				/>
-				<View style={styles.textContent}>
-					<View style={styles.rating}>
-						{[...Array(4)].map((_, i) => (
+			<TouchableWithoutFeedback onPress={onPress}>
+				<View style={styles.content}>
+					<Image
+						source={{ uri: img }}
+						style={styles.image}
+						resizeMode="cover"
+					/>
+					<View style={styles.textContent}>
+						<View style={styles.rating}>
+							{[...Array(4)].map((_, i) => (
+								<Icon
+									key={i}
+									name="star"
+									type="font-awesome"
+									color="#f5c518"
+									size={16}
+								/>
+							))}
 							<Icon
-								key={i}
-								name="star"
+								name="star-o"
 								type="font-awesome"
 								color="#f5c518"
 								size={16}
 							/>
-						))}
-						<Icon
-							name="star-o"
-							type="font-awesome"
-							color="#f5c518"
-							size={16}
-						/>
-					</View>
-					<Text style={styles.title}>Forget everything that you think you know</Text>
-					<View style={styles.authorContainer}>
-						<Image
-							source={{ uri: "https://example.com/author-image.jpg" }} // Replace with actual author image
-							style={styles.authorImage}
-						/>
-						<Text style={styles.author}>A. Roger Ekirch</Text>
+						</View>
+						<Text style={styles.title}>Forget everything that you think you know</Text>
+						<View style={styles.authorContainer}>
+							<Image
+								source={{ uri: "https://example.com/author-image.jpg" }} // Replace with actual author image
+								style={styles.authorImage}
+							/>
+							<Text style={styles.author}>A. Roger Ekirch</Text>
+						</View>
 					</View>
 				</View>
-			</View>
+			</TouchableWithoutFeedback>
 		</Card>
 	)
 }

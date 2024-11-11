@@ -143,6 +143,7 @@ const HomeScreen: React.FC = () => {
 					{books.map((row) => {
 						return (
 							<CardHorizontal
+								onPress={() => navigation.navigate("DetailBook")}
 								key={row}
 								img={row}
 							/>
