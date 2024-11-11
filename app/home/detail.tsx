@@ -1,8 +1,29 @@
-import * as React from "react"
-import { View } from "react-native"
-import { Card, Text } from "react-native-paper"
+import React, { useState } from "react"
+import { View, StyleSheet } from "react-native"
+import { Card, Text, Button } from "react-native-paper"
 
-export default function DetailBookScreen() {
+interface CounterComponentProps {
+	onAddToCart?: (count: number) => void
+}
+
+const DetailBookScreen: React.FC<CounterComponentProps> = ({ onAddToCart }) => {
+	const [count, setCount] = useState(0)
+
+	const handleIncrement = () => setCount(count + 1)
+	const handleDecrement = () => {
+		if (count > 1) {
+			setCount(count - 1)
+		} else {
+			setCount(0)
+		}
+	}
+
+	const handleAddToCart = () => {
+		setCount(1) // Start with 1 on "Add to Cart"
+		if (onAddToCart) {
+			onAddToCart(1)
+		}
+	}
 	return (
 		<View>
 			<Card>
@@ -16,6 +37,52 @@ export default function DetailBookScreen() {
 					</Text>
 				</Card.Content>
 			</Card>
+			<View style={styles.container}>
+				{count === 0 ? (
+					<Button
+						mode="contained"
+						onPress={handleAddToCart}
+					>
+						Add to Cart
+					</Button>
+				) : (
+					<View style={styles.counterContainer}>
+						<Button
+							mode="outlined"
+							onPress={handleDecrement}
+							disabled={count === 1}
+						>
+							-
+						</Button>
+						<Text style={styles.countText}>{count}</Text>
+						<Button
+							mode="outlined"
+							onPress={handleIncrement}
+						>
+							+
+						</Button>
+					</View>
+				)}
+			</View>
 		</View>
 	)
 }
+
+export default DetailBookScreen
+
+const styles = StyleSheet.create({
+	container: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		marginVertical: 10
+	},
+	counterContainer: {
+		flexDirection: "row",
+		alignItems: "center"
+	},
+	countText: {
+		fontSize: 18,
+		marginHorizontal: 10
+	}
+})
