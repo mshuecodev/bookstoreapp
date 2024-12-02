@@ -3,3 +3,12 @@ export interface ApiResponse<T> {
 	message: string
 	status: number
 }
+
+export interface LoginResponse {
+	accessToken: string
+	refreshToken: string
+}
+
+export interface RefreshTokenResponse {
+	token: string
+}

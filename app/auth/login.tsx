@@ -1,31 +1,33 @@
-import { useAuth } from "@/context/AuthContext"
+import React, { useState } from "react"
 import { Button, Text, View } from "react-native"
 import { TextInput } from "react-native-paper"
 import styles from "./styles"
 
-export default function LoginScreen() {
-	const { login } = useAuth()
+import { useAuth } from "@/features/auth/useAuth"
 
-	const handleLogin = () => {
-		console.log("press here")
-		login({ name: "User" })
-	}
+export default function LoginScreen() {
+	const { handleLogin, loading, error } = useAuth()
+
+	const [username, setUsername] = useState("")
+	const [password, setPassword] = useState("")
 
 	return (
 		<View style={styles.container}>
+			{error && <Text>{error}</Text>}
 			<TextInput
-				label="Username"
-				//   value={text}
-				//   onChangeText={text => setText(text)}
+				label="Email"
+				value={username}
+				onChangeText={(text) => setUsername(text)}
 			/>
 			<TextInput
 				label="Password"
-				//   value={text}
-				//   onChangeText={text => setText(text)}
+				value={password}
+				onChangeText={(text) => setPassword(text)}
 			/>
 			<Button
 				title="Login"
-				onPress={handleLogin}
+				onPress={() => handleLogin(username, password)}
+				disabled={loading}
 			/>
 		</View>
 	)
