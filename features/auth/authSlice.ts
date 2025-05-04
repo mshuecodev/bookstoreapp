@@ -11,11 +11,11 @@ const initialState: AuthState = {
 	error: null
 }
 
-export const register = createAsyncThunk("auth/register", async (payload: { username: string; email: string; password: string }, thunkAPI) => {
+export const register = createAsyncThunk("auth/register", async (payload: { email: string; password: string }, thunkAPI) => {
 	try {
 		await registerUser(payload) // Call the API
 		// Optionally, log the user in automatically after registration
-		const loginResponse = await loginUser({ username: payload.username, password: payload.password })
+		const loginResponse = await loginUser({ email: payload.email, password: payload.password })
 		await saveToken(loginResponse.accessToken)
 		return loginResponse
 	} catch (error: any) {
@@ -23,7 +23,7 @@ export const register = createAsyncThunk("auth/register", async (payload: { user
 	}
 })
 
-export const login = createAsyncThunk("auth/login", async (credentials: { username: string; password: string }, thunkAPI) => {
+export const login = createAsyncThunk("auth/login", async (credentials: { email: string; password: string }, thunkAPI) => {
 	try {
 		const response = await loginUser(credentials)
 		console.log("check", response)

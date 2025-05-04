@@ -9,7 +9,7 @@ export default function LoginScreen() {
 	const { handleLogin, loading, error } = useAuth()
 	const navigation = useNavigation()
 
-	const [username, setUsername] = useState("")
+	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
 
 	const navigateToSignup = () => {
@@ -22,8 +22,8 @@ export default function LoginScreen() {
 			{error && <Text style={globalStyles.error}>{error}</Text>}
 			<TextInput
 				label="Email"
-				value={username}
-				onChangeText={(text) => setUsername(text)}
+				value={email}
+				onChangeText={(text) => setEmail(text)}
 				style={globalStyles.input}
 				mode="outlined"
 				theme={{ colors: { primary: "#1E90FF" } }}
@@ -45,7 +45,7 @@ export default function LoginScreen() {
 			) : (
 				<Button
 					mode="contained"
-					onPress={() => handleLogin(username, password)}
+					onPress={() => handleLogin(email, password)}
 					style={[globalStyles.button, globalStyles.primaryButton]}
 					labelStyle={globalStyles.primaryButtonText}
 				>
