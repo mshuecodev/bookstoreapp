@@ -1,7 +1,7 @@
 import React from "react"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
-import LoginScreen from "@/app/auth/login"
+import LoginScreen from "@/app/auth/signin"
 import SignupScreen from "@/app/auth/signup"
 
 const Stack = createNativeStackNavigator()
@@ -9,7 +9,7 @@ const Stack = createNativeStackNavigator()
 function PublicNav() {
 	return (
 		<Stack.Navigator
-			initialRouteName="signin"
+			// initialRouteName="signin"
 			screenOptions={{ headerShown: false }}
 		>
 			<Stack.Screen

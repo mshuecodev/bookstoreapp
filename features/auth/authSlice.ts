@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import { saveToken, getToken, deleteToken, saveRefreshToken, getRefreshToken, deleteRefreshToken } from "@/services/secureStoreService"
-import { loginUser, refreshToken } from "@/services/authService"
+import { loginUser, refreshToken, registerUser } from "@/services/authService"
 import { AuthState } from "./authTypes"
 
 const initialState: AuthState = {
@@ -10,6 +10,18 @@ const initialState: AuthState = {
 	loading: false,
 	error: null
 }
+
+export const register = createAsyncThunk("auth/register", async (payload: { username: string; email: string; password: string }, thunkAPI) => {
+	try {
+		await registerUser(payload) // Call the API
+		// Optionally, log the user in automatically after registration
+		const loginResponse = await loginUser({ username: payload.username, password: payload.password })
+		await saveToken(loginResponse.accessToken)
+		return loginResponse
+	} catch (error: any) {
+		return thunkAPI.rejectWithValue(error.message || "Registration failed")
+	}
+})
 
 export const login = createAsyncThunk("auth/login", async (credentials: { username: string; password: string }, thunkAPI) => {
 	try {
@@ -45,7 +57,6 @@ const authSlice = createSlice({
 	reducers: {
 		logout: (state) => {
 			state.token = null
-			// state.refreshToken = null
 			state.isAuthenticated = false
 			deleteToken()
 			deleteRefreshToken()
@@ -68,6 +79,17 @@ const authSlice = createSlice({
 			})
 			.addCase(refreshAuthToken.fulfilled, (state, action) => {
 				state.token = action.payload
+			})
+			.addCase(register.pending, (state) => {
+				state.loading = true
+			})
+			.addCase(register.fulfilled, (state) => {
+				state.loading = false
+				state.error = null
+			})
+			.addCase(register.rejected, (state, action) => {
+				state.loading = false
+				state.error = action.payload as string
 			})
 	}
 })

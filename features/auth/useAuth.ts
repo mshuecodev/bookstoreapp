@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { login, logout } from "./authSlice"
+import { login, logout, register } from "./authSlice"
+import { RegisterPayload } from "./authTypes"
 
 export const useAuth = () => {
 	const dispatch = useAppDispatch()
@@ -13,9 +14,14 @@ export const useAuth = () => {
 		dispatch(logout())
 	}
 
+	const handleRegister = (payload: RegisterPayload) => {
+		dispatch(register(payload))
+	}
+
 	return {
 		...authState,
 		handleLogin,
-		handleLogout
+		handleLogout,
+		handleRegister
 	}
 }
