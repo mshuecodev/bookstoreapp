@@ -4,22 +4,40 @@ import { RegisterPayload } from "./authTypes"
 
 export const useAuth = () => {
 	const dispatch = useAppDispatch()
-	const authState = useAppSelector((state) => state.auth)
+	const { isAuthenticated, user, error, loading } = useAppSelector((state) => state.auth)
 
-	const handleLogin = (email: string, password: string) => {
-		dispatch(login({ email, password }))
+	// Handle login
+	const handleLogin = async (email: string, password: string): Promise<boolean> => {
+		try {
+			await dispatch(login({ email, password })).unwrap()
+			return true
+		} catch (err) {
+			console.error("Login failed:", err)
+			return false
+		}
 	}
 
+	// Handle logout
 	const handleLogout = () => {
 		dispatch(logout())
 	}
 
-	const handleRegister = (payload: RegisterPayload) => {
-		dispatch(register(payload))
+	// Handle registration
+	const handleRegister = async (payload: RegisterPayload): Promise<boolean> => {
+		try {
+			await dispatch(register(payload)).unwrap()
+			return true
+		} catch (err) {
+			console.error("Registration failed:", err)
+			return false
+		}
 	}
 
 	return {
-		...authState,
+		isAuthenticated,
+		user,
+		error,
+		loading,
 		handleLogin,
 		handleLogout,
 		handleRegister

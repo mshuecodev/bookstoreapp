@@ -7,7 +7,6 @@ import { PaperProvider } from "react-native-paper"
 import { Provider } from "react-redux"
 import { Stack } from "expo-router"
 import store from "@/store"
-
 import { useColorScheme } from "@/hooks/useColorScheme"
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -33,7 +32,32 @@ export default function RootLayout() {
 		<Provider store={store}>
 			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
 				<PaperProvider>
-					<Stack />
+					<Stack screenOptions={{ headerShown: false }}>
+						{/* {isAuthenticated ? (
+							<>
+								<Stack.Screen
+									name="protected/index"
+									options={{ title: "Home" }}
+								/>
+								<Stack.Screen
+									name="protected/profile"
+									options={{ title: "Profile" }}
+								/>
+							</>
+						) : (
+							<>
+								<Stack.Screen
+									name="index"
+									options={{ title: "Login" }}
+								/>
+								<Stack.Screen
+									name="signup"
+									options={{ title: "Sign Up" }}
+								/>
+							</>
+						)} */}
+						<Stack screenOptions={{ headerShown: false }} />
+					</Stack>
 				</PaperProvider>
 			</ThemeProvider>
 		</Provider>

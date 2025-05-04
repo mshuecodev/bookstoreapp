@@ -10,5 +10,6 @@ export interface LoginResponse {
 }
 
 export interface RefreshTokenResponse {
+	accessToken(accessToken: any): unknown
 	token: string
 }

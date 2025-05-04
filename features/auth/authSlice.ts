@@ -3,115 +3,116 @@ import { saveToken, getToken, deleteToken, saveRefreshToken, getRefreshToken, de
 import { loginUser, refreshToken, registerUser } from "@/services/authService"
 import { AuthState } from "./authTypes"
 
+// Initial state
 const initialState: AuthState = {
 	token: null,
-	// refreshToken: null,
 	isAuthenticated: false,
 	loading: false,
 	error: null
 }
 
-export const register = createAsyncThunk("auth/register", async (payload: { email: string; password: string }, thunkAPI: { rejectWithValue: (arg0: any) => any }) => {
+// Async thunk for user registration
+export const register = createAsyncThunk("auth/register", async (payload: { email: string; password: string }, thunkAPI) => {
 	try {
-		await registerUser(payload) // Call the API
-		// Optionally, log the user in automatically after registration
+		// Call the API to register the user
+		await registerUser(payload)
+
+		// Automatically log the user in after registration
 		const loginResponse = await loginUser({ email: payload.email, password: payload.password })
 		await saveToken(loginResponse.accessToken)
+		await saveRefreshToken(loginResponse.refreshToken)
+
 		return loginResponse
 	} catch (error: any) {
 		return thunkAPI.rejectWithValue(error.message || "Registration failed")
 	}
 })
 
-export const login = createAsyncThunk("auth/login", async (credentials: { email: string; password: string }, thunkAPI: { rejectWithValue: (arg0: string) => any }) => {
+// Async thunk for user login
+export const login = createAsyncThunk("auth/login", async (credentials: { email: string; password: string }, thunkAPI) => {
 	try {
 		const response = await loginUser(credentials)
-		console.log("check", response)
 		await saveToken(response.accessToken)
-		// await saveRefreshToken(response.refreshToken)
+		await saveRefreshToken(response.refreshToken)
 
 		return response
-	} catch (error) {
-		console.log("error", error)
-		return thunkAPI.rejectWithValue("Login failed")
+	} catch (error: any) {
+		return thunkAPI.rejectWithValue(error.message || "Login failed")
 	}
 })
 
-export const refreshAuthToken = createAsyncThunk("auth/refreshToken", async (_: any, thunkAPI: { rejectWithValue: (arg0: string) => any }) => {
-	const refToken = await getRefreshToken()
-	if (!refToken) {
-		return thunkAPI.rejectWithValue("No refresh token available")
-	}
-	try {
-		const response = await refreshToken(refToken)
-		await saveToken(response.token)
-		return response.token
-	} catch (error) {
-		return thunkAPI.rejectWithValue("Token refresh failed")
-	}
-})
+// Async thunk for refreshing the token
+// export const refreshAuthToken = createAsyncThunk("auth/refreshToken", async (_, thunkAPI) => {
+// 	try {
+// 		const refToken = await getRefreshToken()
+// 		if (!refToken) {
+// 			return thunkAPI.rejectWithValue("No refresh token available")
+// 		}
 
+// 		const response = await refreshToken(refToken)
+// 		await saveToken(response.accessToken)
+// 		return response.accessToken
+// 	} catch (error: any) {
+// 		return thunkAPI.rejectWithValue(error.message || "Token refresh failed")
+// 	}
+// })
+
+// Auth slice
 const authSlice = createSlice({
 	name: "auth",
 	initialState,
 	reducers: {
-		logout: (state: { token: null; isAuthenticated: boolean }) => {
+		// Logout action
+		logout: (state) => {
 			state.token = null
 			state.isAuthenticated = false
 			deleteToken()
 			deleteRefreshToken()
 		}
 	},
-	extraReducers: (builder: {
-		addCase: (
-			arg0: any,
-			arg1: (state: any) => void
-		) => {
-			(): any
-			new (): any
-			addCase: {
-				(arg0: any, arg1: (state: any, action: any) => void): {
-					(): any
-					new (): any
-					addCase: {
-						(arg0: any, arg1: (state: any, action: any) => void): { (): any; new (): any; addCase: { (arg0: any, arg1: (state: any, action: any) => void): { (): any; new (): any; addCase: { (arg0: any, arg1: (state: any) => void): { (): any; new (): any; addCase: { (arg0: any, arg1: (state: any) => void): { (): any; new (): any; addCase: { (arg0: any, arg1: (state: any, action: any) => void): void; new (): any } }; new (): any } }; new (): any } }; new (): any } }
-						new (): any
-					}
-				}
-				new (): any
-			}
-		}
-	}) => {
+	extraReducers: (builder) => {
+		// Login cases
 		builder
-			.addCase(login.pending, (state: { loading: boolean }) => {
+			.addCase(login.pending, (state) => {
 				state.loading = true
+				state.error = null
 			})
-			.addCase(login.fulfilled, (state: { loading: boolean; token: any; isAuthenticated: boolean }, action: { payload: { accessToken: any } }) => {
+			.addCase(login.fulfilled, (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
 				state.loading = false
 				state.token = action.payload.accessToken
-				// state.refreshToken = action.payload.refreshToken
 				state.isAuthenticated = true
 			})
-			.addCase(login.rejected, (state: { loading: boolean; error: string }, action: { payload: string }) => {
+			.addCase(login.rejected, (state, action: PayloadAction<any>) => {
 				state.loading = false
-				state.error = action.payload as string
+				state.error = action.payload
 			})
-			.addCase(refreshAuthToken.fulfilled, (state: { token: any }, action: { payload: any }) => {
-				state.token = action.payload
-			})
-			.addCase(register.pending, (state: { loading: boolean }) => {
+
+		// Register cases
+		builder
+			.addCase(register.pending, (state) => {
 				state.loading = true
+				state.error = null
 			})
-			.addCase(register.fulfilled, (state: { loading: boolean; error: null }) => {
+			.addCase(register.fulfilled, (state) => {
 				state.loading = false
 				state.error = null
 			})
-			.addCase(register.rejected, (state: { loading: boolean; error: string }, action: { payload: string }) => {
+			.addCase(register.rejected, (state, action: PayloadAction<any>) => {
 				state.loading = false
-				state.error = action.payload as string
+				state.error = action.payload
 			})
+
+		// Refresh token cases
+		// builder
+		// 	.addCase(refreshAuthToken.fulfilled, (state, action: PayloadAction<string>) => {
+		// 		state.token = action.payload
+		// 	})
+		// 	.addCase(refreshAuthToken.rejected, (state, action: PayloadAction<any>) => {
+		// 		state.error = action.payload
+		// 	})
 	}
 })
 
+// Export actions and reducer
 export const { logout } = authSlice.actions
 export default authSlice.reducer

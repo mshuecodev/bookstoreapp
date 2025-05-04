@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity, Alert, ActivityIndicator } from "react-na
 import { TextInput, Button } from "react-native-paper"
 import { useAuth } from "@/features/auth/useAuth"
 import { useNavigation } from "@react-navigation/native"
-import globalStyles from "@/app/styles/styles"
+import globalStyles from "@/styles/styles"
 
 export default function SignupScreen() {
 	const { handleRegister, loading, error } = useAuth()
