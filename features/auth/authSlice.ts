@@ -11,7 +11,7 @@ const initialState: AuthState = {
 	error: null
 }
 
-export const register = createAsyncThunk("auth/register", async (payload: { email: string; password: string }, thunkAPI) => {
+export const register = createAsyncThunk("auth/register", async (payload: { email: string; password: string }, thunkAPI: { rejectWithValue: (arg0: any) => any }) => {
 	try {
 		await registerUser(payload) // Call the API
 		// Optionally, log the user in automatically after registration
@@ -23,7 +23,7 @@ export const register = createAsyncThunk("auth/register", async (payload: { emai
 	}
 })
 
-export const login = createAsyncThunk("auth/login", async (credentials: { email: string; password: string }, thunkAPI) => {
+export const login = createAsyncThunk("auth/login", async (credentials: { email: string; password: string }, thunkAPI: { rejectWithValue: (arg0: string) => any }) => {
 	try {
 		const response = await loginUser(credentials)
 		console.log("check", response)
@@ -37,7 +37,7 @@ export const login = createAsyncThunk("auth/login", async (credentials: { email:
 	}
 })
 
-export const refreshAuthToken = createAsyncThunk("auth/refreshToken", async (_, thunkAPI) => {
+export const refreshAuthToken = createAsyncThunk("auth/refreshToken", async (_: any, thunkAPI: { rejectWithValue: (arg0: string) => any }) => {
 	const refToken = await getRefreshToken()
 	if (!refToken) {
 		return thunkAPI.rejectWithValue("No refresh token available")
@@ -55,39 +55,58 @@ const authSlice = createSlice({
 	name: "auth",
 	initialState,
 	reducers: {
-		logout: (state) => {
+		logout: (state: { token: null; isAuthenticated: boolean }) => {
 			state.token = null
 			state.isAuthenticated = false
 			deleteToken()
 			deleteRefreshToken()
 		}
 	},
-	extraReducers: (builder) => {
+	extraReducers: (builder: {
+		addCase: (
+			arg0: any,
+			arg1: (state: any) => void
+		) => {
+			(): any
+			new (): any
+			addCase: {
+				(arg0: any, arg1: (state: any, action: any) => void): {
+					(): any
+					new (): any
+					addCase: {
+						(arg0: any, arg1: (state: any, action: any) => void): { (): any; new (): any; addCase: { (arg0: any, arg1: (state: any, action: any) => void): { (): any; new (): any; addCase: { (arg0: any, arg1: (state: any) => void): { (): any; new (): any; addCase: { (arg0: any, arg1: (state: any) => void): { (): any; new (): any; addCase: { (arg0: any, arg1: (state: any, action: any) => void): void; new (): any } }; new (): any } }; new (): any } }; new (): any } }
+						new (): any
+					}
+				}
+				new (): any
+			}
+		}
+	}) => {
 		builder
-			.addCase(login.pending, (state) => {
+			.addCase(login.pending, (state: { loading: boolean }) => {
 				state.loading = true
 			})
-			.addCase(login.fulfilled, (state, action) => {
+			.addCase(login.fulfilled, (state: { loading: boolean; token: any; isAuthenticated: boolean }, action: { payload: { accessToken: any } }) => {
 				state.loading = false
 				state.token = action.payload.accessToken
 				// state.refreshToken = action.payload.refreshToken
 				state.isAuthenticated = true
 			})
-			.addCase(login.rejected, (state, action) => {
+			.addCase(login.rejected, (state: { loading: boolean; error: string }, action: { payload: string }) => {
 				state.loading = false
 				state.error = action.payload as string
 			})
-			.addCase(refreshAuthToken.fulfilled, (state, action) => {
+			.addCase(refreshAuthToken.fulfilled, (state: { token: any }, action: { payload: any }) => {
 				state.token = action.payload
 			})
-			.addCase(register.pending, (state) => {
+			.addCase(register.pending, (state: { loading: boolean }) => {
 				state.loading = true
 			})
-			.addCase(register.fulfilled, (state) => {
+			.addCase(register.fulfilled, (state: { loading: boolean; error: null }) => {
 				state.loading = false
 				state.error = null
 			})
-			.addCase(register.rejected, (state, action) => {
+			.addCase(register.rejected, (state: { loading: boolean; error: string }, action: { payload: string }) => {
 				state.loading = false
 				state.error = action.payload as string
 			})
