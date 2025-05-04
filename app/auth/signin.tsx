@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Text, View, TouchableOpacity, ActivityIndicator } from "react-native"
+import { Text, View, TouchableOpacity, ActivityIndicator, Alert } from "react-native"
 import { TextInput, Button } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { useAuth } from "@/features/auth/useAuth"
@@ -14,6 +14,25 @@ export default function LoginScreen() {
 
 	const navigateToSignup = () => {
 		navigation.navigate("signup" as never) // Navigate to the Signup screen
+	}
+
+	const validateEmail = (email: string) => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		return emailRegex.test(email)
+	}
+
+	const handleLoginWithValidation = () => {
+		if (!email || !password) {
+			Alert.alert("Error", "Both email and password are required")
+			return
+		}
+
+		if (!validateEmail(email)) {
+			Alert.alert("Error", "Please enter a valid email address")
+			return
+		}
+
+		handleLogin(email, password)
 	}
 
 	return (
@@ -45,7 +64,7 @@ export default function LoginScreen() {
 			) : (
 				<Button
 					mode="contained"
-					onPress={() => handleLogin(email, password)}
+					onPress={handleLoginWithValidation}
 					style={[globalStyles.button, globalStyles.primaryButton]}
 					labelStyle={globalStyles.primaryButtonText}
 				>

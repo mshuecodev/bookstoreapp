@@ -15,6 +15,11 @@ export default function SignupScreen() {
 		confirmPassword: ""
 	})
 
+	const validateEmail = (email: string) => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		return emailRegex.test(email)
+	}
+
 	const handleInputChange = (field: string, value: string) => {
 		setFormData({ ...formData, [field]: value })
 	}
@@ -22,11 +27,19 @@ export default function SignupScreen() {
 	const handleSignup = async () => {
 		const { email, password, confirmPassword } = formData
 
+		// Validate all fields are filled
 		if (!email || !password || !confirmPassword) {
 			Alert.alert("Error", "All fields are required")
 			return
 		}
 
+		// Validate email format
+		if (!validateEmail(email)) {
+			Alert.alert("Error", "Please enter a valid email address")
+			return
+		}
+
+		// Validate password and confirm password match
 		if (password !== confirmPassword) {
 			Alert.alert("Error", "Passwords do not match")
 			return
@@ -82,22 +95,20 @@ export default function SignupScreen() {
 					color="#1E90FF"
 				/>
 			) : (
-				<>
-					<Button
-						mode="contained"
-						onPress={handleSignup}
-						style={[globalStyles.button, globalStyles.primaryButton]}
-						labelStyle={globalStyles.primaryButtonText}
-					>
-						Sign Up
-					</Button>
-				</>
+				<Button
+					mode="contained"
+					onPress={handleSignup}
+					style={[globalStyles.button, globalStyles.primaryButton]}
+					labelStyle={globalStyles.primaryButtonText}
+				>
+					Sign Up
+				</Button>
 			)}
 			<Text style={globalStyles.orText}>- Or sign up with -</Text>
 			<View style={globalStyles.socialButtonsContainer}>
 				<Button
 					mode="contained"
-					onPress={() => {}}
+					onPress={handleGoogleSignup}
 					style={[globalStyles.socialButton, { backgroundColor: "#DB4437" }]}
 					labelStyle={globalStyles.socialButtonText}
 				>
