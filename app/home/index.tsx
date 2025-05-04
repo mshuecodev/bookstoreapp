@@ -113,7 +113,7 @@ const HomeScreen: React.FC = () => {
 						return (
 							<Animated.View style={[styles.imageContainer, { transform: [{ scale }] }]}>
 								<Image
-									onPress={() => navigation.navigate("DetailBook")}
+									onPress={() => navigation.navigate("DetailBook" as never)}
 									source={{ uri: item }}
 									style={styles.image}
 									resizeMode="cover"
@@ -143,7 +143,7 @@ const HomeScreen: React.FC = () => {
 					{books.map((row) => {
 						return (
 							<CardHorizontal
-								onPress={() => navigation.navigate("DetailBook")}
+								onPress={() => navigation.navigate("DetailBook" as never)}
 								key={row}
 								img={row}
 							/>
