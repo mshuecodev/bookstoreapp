@@ -1,11 +1,13 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native"
+import "@/global.css";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { useFonts } from "expo-font"
 import * as SplashScreen from "expo-splash-screen"
 import React, { useEffect } from "react"
 import "react-native-reanimated"
 import { PaperProvider } from "react-native-paper"
 import { Provider } from "react-redux"
-import { Stack } from "expo-router"
+import { Stack, Slot } from "expo-router"
 import store from "@/store"
 import { useColorScheme } from "@/hooks/useColorScheme"
 
@@ -29,38 +31,13 @@ export default function RootLayout() {
 	}
 
 	return (
-		<Provider store={store}>
-			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-				<PaperProvider>
-					<Stack screenOptions={{ headerShown: false }} />
-					{/* <Stack screenOptions={{ headerShown: false }}>
-						{isAuthenticated ? (
-							<>
-								<Stack.Screen
-									name="protected/index"
-									options={{ title: "Home" }}
-								/>
-								<Stack.Screen
-									name="protected/profile"
-									options={{ title: "Profile" }}
-								/>
-							</>
-						) : (
-							<>
-								<Stack.Screen
-									name="index"
-									options={{ title: "Login" }}
-								/>
-								<Stack.Screen
-									name="signup"
-									options={{ title: "Sign Up" }}
-								/>
-							</>
-						)}
-						
-					</Stack> */}
-				</PaperProvider>
-			</ThemeProvider>
-		</Provider>
-	)
+        <GluestackUIProvider mode="light"><Provider store={store}>
+                <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+                    <PaperProvider>
+                        {/* <Stack screenOptions={{ headerShown: false }} /> */}
+                        <Slot />
+                    </PaperProvider>
+                </ThemeProvider>
+            </Provider></GluestackUIProvider>
+    );
 }
