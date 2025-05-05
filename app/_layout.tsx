@@ -32,8 +32,9 @@ export default function RootLayout() {
 		<Provider store={store}>
 			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
 				<PaperProvider>
-					<Stack screenOptions={{ headerShown: false }}>
-						{/* {isAuthenticated ? (
+					<Stack screenOptions={{ headerShown: false }} />
+					{/* <Stack screenOptions={{ headerShown: false }}>
+						{isAuthenticated ? (
 							<>
 								<Stack.Screen
 									name="protected/index"
@@ -55,9 +56,9 @@ export default function RootLayout() {
 									options={{ title: "Sign Up" }}
 								/>
 							</>
-						)} */}
-						<Stack screenOptions={{ headerShown: false }} />
-					</Stack>
+						)}
+						
+					</Stack> */}
 				</PaperProvider>
 			</ThemeProvider>
 		</Provider>

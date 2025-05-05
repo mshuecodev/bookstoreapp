@@ -1,5 +1,6 @@
 import apiClient from "./apiClient"
 import { LoginResponse, RefreshTokenResponse } from "./responseTypes"
+import { RegisterPayload } from "@/features/auth/authTypes"
 
 export const loginUser = async (credentials: { email: string; password: string }): Promise<LoginResponse> => {
 	// Sending a POST request to the /auth/login endpoint with user credentials
@@ -18,8 +19,14 @@ export const refreshToken = async (refreshToken: string | null): Promise<Refresh
 	return response.data // Returns a new access token
 }
 
-export const registerUser = async (userData: { email: string; password: string }): Promise<void> => {
+export const registerUser = async (userData: RegisterPayload): Promise<{ accessToken: any; refreshToken: any; user: any }> => {
 	// Sending a POST request to the /auth/register endpoint with user data
 	const response = await apiClient.post("/auth/register", userData)
 	console.log("User registered successfully", response.data)
+	const { accessToken, refreshToken, user } = await response.data
+	return {
+		accessToken,
+		refreshToken,
+		user
+	}
 }

@@ -1,28 +1,35 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
-import { saveToken, getToken, deleteToken, saveRefreshToken, getRefreshToken, deleteRefreshToken } from "@/services/secureStoreService"
+import { saveToken, deleteToken, saveRefreshToken, deleteRefreshToken, getRefreshToken } from "@/services/secureStoreService"
 import { loginUser, refreshToken, registerUser } from "@/services/authService"
 import { AuthState } from "./authTypes"
+import { RegisterPayload } from "./authTypes"
 
 // Initial state
 const initialState: AuthState = {
 	token: null,
 	isAuthenticated: false,
 	loading: false,
-	error: null
+	error: null,
+	user: null
+}
+
+// Utility function to handle token saving
+const saveTokens = async (accessToken: string, refreshToken: string) => {
+	await saveToken(accessToken)
+	await saveRefreshToken(refreshToken)
 }
 
 // Async thunk for user registration
-export const register = createAsyncThunk("auth/register", async (payload: { email: string; password: string }, thunkAPI) => {
+export const register = createAsyncThunk("auth/register", async (payload: RegisterPayload, thunkAPI) => {
 	try {
-		// Call the API to register the user
-		await registerUser(payload)
+		// Register the user
+		let data = await registerUser(payload)
 
 		// Automatically log the user in after registration
-		const loginResponse = await loginUser({ email: payload.email, password: payload.password })
-		await saveToken(loginResponse.accessToken)
-		await saveRefreshToken(loginResponse.refreshToken)
+		// const loginResponse = await loginUser({ email: payload.email, password: payload.password })
+		await saveTokens(data.accessToken, data.refreshToken)
 
-		return loginResponse
+		return data
 	} catch (error: any) {
 		return thunkAPI.rejectWithValue(error.message || "Registration failed")
 	}
@@ -32,8 +39,7 @@ export const register = createAsyncThunk("auth/register", async (payload: { emai
 export const login = createAsyncThunk("auth/login", async (credentials: { email: string; password: string }, thunkAPI) => {
 	try {
 		const response = await loginUser(credentials)
-		await saveToken(response.accessToken)
-		await saveRefreshToken(response.refreshToken)
+		await saveTokens(response.accessToken, response.refreshToken)
 
 		return response
 	} catch (error: any) {
@@ -66,50 +72,40 @@ const authSlice = createSlice({
 		logout: (state) => {
 			state.token = null
 			state.isAuthenticated = false
+			state.user = null
 			deleteToken()
 			deleteRefreshToken()
 		}
 	},
 	extraReducers: (builder) => {
-		// Login cases
+		// Handle async thunks
 		builder
-			.addCase(login.pending, (state) => {
-				state.loading = true
-				state.error = null
-			})
-			.addCase(login.fulfilled, (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
-				state.loading = false
-				state.token = action.payload.accessToken
-				state.isAuthenticated = true
-			})
-			.addCase(login.rejected, (state, action: PayloadAction<any>) => {
-				state.loading = false
-				state.error = action.payload
-			})
-
-		// Register cases
-		builder
-			.addCase(register.pending, (state) => {
-				state.loading = true
-				state.error = null
-			})
-			.addCase(register.fulfilled, (state) => {
-				state.loading = false
-				state.error = null
-			})
-			.addCase(register.rejected, (state, action: PayloadAction<any>) => {
-				state.loading = false
-				state.error = action.payload
-			})
-
-		// Refresh token cases
-		// builder
-		// 	.addCase(refreshAuthToken.fulfilled, (state, action: PayloadAction<string>) => {
-		// 		state.token = action.payload
-		// 	})
-		// 	.addCase(refreshAuthToken.rejected, (state, action: PayloadAction<any>) => {
-		// 		state.error = action.payload
-		// 	})
+			.addMatcher(
+				(action) => action.type.endsWith("/pending"),
+				(state) => {
+					state.loading = true
+					state.error = null
+				}
+			)
+			.addMatcher(
+				(action) => action.type.endsWith("/fulfilled"),
+				(state, action: PayloadAction<any>) => {
+					state.loading = false
+					state.error = null
+					if (action.type === "auth/login/fulfilled" || action.type === "auth/register/fulfilled") {
+						state.token = action.payload.accessToken
+						state.isAuthenticated = true
+						state.user = action.payload.user || null
+					}
+				}
+			)
+			.addMatcher(
+				(action) => action.type.endsWith("/rejected"),
+				(state, action: PayloadAction<any>) => {
+					state.loading = false
+					state.error = action.payload
+				}
+			)
 	}
 })
 
