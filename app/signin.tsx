@@ -36,7 +36,7 @@ export default function LoginScreen() {
 		// Attempt to log in
 		const success = await handleLogin(email, password)
 		if (success) {
-			router.replace("/index") // Navigate to the protected home screen
+			router.replace("/") // Navigate to the protected home screen
 		} else {
 			Alert.alert("Error", error || "Login failed. Please try again.")
 		}

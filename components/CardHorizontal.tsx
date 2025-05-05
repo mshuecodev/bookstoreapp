@@ -1,94 +1,58 @@
 import React from "react"
-import { View, StyleSheet, Text, Image, TouchableWithoutFeedback } from "react-native"
-import { Card, Icon } from "@rneui/themed"
+import { VStack } from "@/components/ui/vstack"
+import { HStack } from "@/components/ui/hstack"
+import { Image } from "@/components/ui/image"
+import { Text } from "@/components/ui/text"
+import { Pressable } from "@/components/ui/pressable"
+import { Icon } from "@/components/ui/icon"
+import { Box } from "@/components/ui/box"
 
-function CardHorizontal({ img, onPress }) {
+interface CardHorizontalProps {
+	img: string
+	onPress: () => void
+}
+
+function CardHorizontal({ img, onPress }: CardHorizontalProps) {
 	return (
-		<Card containerStyle={styles.card}>
-			<TouchableWithoutFeedback onPress={onPress}>
-				<View style={styles.content}>
+		<Box className="rounded-md overflow-hidden bg-white shadow-md p-0">
+			<Pressable
+				onPress={onPress}
+				className="w-full"
+			>
+				<HStack className="space-x-4 p-4">
 					<Image
 						source={{ uri: img }}
-						style={styles.image}
-						resizeMode="cover"
+						alt="Book Cover"
+						className="w-20 h-30 rounded-md"
 					/>
-					<View style={styles.textContent}>
-						<View style={styles.rating}>
+					<VStack className="flex-1 justify-center">
+						<HStack className="space-x-1 items-center mb-2">
 							{[...Array(4)].map((_, i) => (
 								<Icon
 									key={i}
-									name="star"
-									type="font-awesome"
-									color="#f5c518"
-									size={16}
+									// name="star"
+									className="text-yellow-400 text-sm"
 								/>
 							))}
 							<Icon
-								name="star-o"
-								type="font-awesome"
-								color="#f5c518"
-								size={16}
+								// icon="star-o"
+								className="text-yellow-400 text-sm"
 							/>
-						</View>
-						<Text style={styles.title}>Forget everything that you think you know</Text>
-						<View style={styles.authorContainer}>
+						</HStack>
+						<Text className="text-md font-bold mb-2">Forget everything that you think you know</Text>
+						<HStack className="items-center mt-2">
 							<Image
 								source={{ uri: "https://example.com/author-image.jpg" }} // Replace with actual author image
-								style={styles.authorImage}
+								alt="Author"
+								className="w-5 h-5 rounded-full mr-2"
 							/>
-							<Text style={styles.author}>A. Roger Ekirch</Text>
-						</View>
-					</View>
-				</View>
-			</TouchableWithoutFeedback>
-		</Card>
+							<Text className="text-sm text-gray-500">A. Roger Ekirch</Text>
+						</HStack>
+					</VStack>
+				</HStack>
+			</Pressable>
+		</Box>
 	)
 }
 
 export default CardHorizontal
-
-const styles = StyleSheet.create({
-	card: {
-		padding: 0,
-		borderRadius: 10,
-		overflow: "hidden"
-	},
-	content: {
-		flexDirection: "row",
-		padding: 10
-	},
-	image: {
-		width: 80,
-		height: 120,
-		borderRadius: 10,
-		marginRight: 10
-	},
-	textContent: {
-		flex: 1,
-		justifyContent: "center"
-	},
-	rating: {
-		flexDirection: "row",
-		marginBottom: 5
-	},
-	title: {
-		fontSize: 16,
-		fontWeight: "bold",
-		marginBottom: 5
-	},
-	authorContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginTop: 5
-	},
-	authorImage: {
-		width: 20,
-		height: 20,
-		borderRadius: 10,
-		marginRight: 5
-	},
-	author: {
-		fontSize: 14,
-		color: "#555"
-	}
-})
