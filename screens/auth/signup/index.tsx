@@ -19,6 +19,7 @@ import { GoogleIcon } from "@/assets/icons/google"
 import { Pressable } from "@/components/ui/pressable"
 import { useRouter } from "expo-router"
 import { AuthLayout } from "@/screens/layout"
+import { useAuth } from "@/features/auth/useAuth"
 
 const signUpSchema = z.object({
 	name: z.string().min(1, "Name is required"),
@@ -30,6 +31,8 @@ const signUpSchema = z.object({
 type SignUpSchemaType = z.infer<typeof signUpSchema>
 
 const SignUpWithLeftBackground = () => {
+	const { handleRegister, loading, error } = useAuth()
+
 	const {
 		control,
 		handleSubmit,
@@ -43,8 +46,50 @@ const SignUpWithLeftBackground = () => {
 	const [showPassword, setShowPassword] = useState(false)
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-	const onSubmit = (data: SignUpSchemaType) => {
+	const onSubmit = async (data: SignUpSchemaType) => {
 		console.log("onsubmit here")
+
+		try {
+			const success = await handleRegister({
+				name: data.name,
+				email: data.email,
+				password: data.password
+			})
+			if (success) {
+				// Show success toast and navigate to the login page
+				toast.show({
+					placement: "top",
+					render: () => (
+						<Toast>
+							<ToastTitle>Registration Successful</ToastTitle>
+						</Toast>
+					)
+				})
+				router.push("/signin")
+			} else {
+				// Show error toast if registration fails
+				toast.show({
+					placement: "top",
+					render: () => (
+						<Toast>
+							<ToastTitle>Error</ToastTitle>
+							<Text>{error || "Registration failed. Please try again."}</Text>
+						</Toast>
+					)
+				})
+			}
+		} catch (err) {
+			toast.show({
+				placement: "top",
+				render: () => (
+					<Toast>
+						<ToastTitle>Error</ToastTitle>
+						<Text>An unexpected error occurred. Please try again.</Text>
+					</Toast>
+				)
+			})
+			console.error("Registration error:", err)
+		}
 	}
 
 	const handleState = () => {
@@ -296,6 +341,7 @@ const SignUpWithLeftBackground = () => {
 					<Button
 						className="w-full"
 						onPress={handleSubmit(onSubmit)}
+						isDisabled={loading}
 					>
 						<ButtonText className="font-medium">Sign up</ButtonText>
 					</Button>
@@ -335,3 +381,4 @@ export const SignUp = () => {
 		</AuthLayout>
 	)
 }
+// Removed the unused watch function as react-hook-form's watch method is used.
