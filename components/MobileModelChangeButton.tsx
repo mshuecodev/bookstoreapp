@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { Fab, FabIcon } from "../components/ui"
+import { Fab, FabIcon, Box } from "../components/ui"
 import { Moon, Sun } from "lucide-react-native"
 import { ThemeContext } from "@/context/Theme"
 
@@ -8,7 +8,10 @@ const MobileModeChangeButton = () => {
 	return (
 		<Fab
 			onPress={toggleColorMode}
-			className="md:hidden bottom-4 right-4"
+			placement="bottom right"
+			style={{ bottom: 60 }}
+			// className="md:hidden bottom-4 right-4"
+			size="md"
 		>
 			<FabIcon
 				as={colorMode === "light" ? Moon : Sun}

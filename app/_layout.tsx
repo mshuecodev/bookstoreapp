@@ -11,6 +11,7 @@ import { Stack, Slot } from "expo-router"
 import store from "@/store"
 import { useColorScheme } from "@/hooks/useColorScheme"
 import { ThemeContext } from "@/context/Theme"
+import { SafeAreaView } from "@/components/ui"
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
@@ -40,17 +41,20 @@ export default function RootLayout() {
 	}
 
 	return (
-		<ThemeContext.Provider value={{ colorMode, toggleColorMode }}>
-			<GluestackUIProvider mode="light">
-				<Provider store={store}>
-					<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-						<PaperProvider>
-							{/* <Stack screenOptions={{ headerShown: false }} /> */}
-							<Slot />
-						</PaperProvider>
-					</ThemeProvider>
-				</Provider>
-			</GluestackUIProvider>
-		</ThemeContext.Provider>
+		<>
+			<SafeAreaView className={`${colorMode === "light" ? "bg-[#E5E5E5]" : "bg-[#262626]"}`} />
+			<ThemeContext.Provider value={{ colorMode, toggleColorMode }}>
+				<GluestackUIProvider mode={colorMode}>
+					<Provider store={store}>
+						<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+							<PaperProvider>
+								{/* <Stack screenOptions={{ headerShown: false }} /> */}
+								<Slot />
+							</PaperProvider>
+						</ThemeProvider>
+					</Provider>
+				</GluestackUIProvider>
+			</ThemeContext.Provider>
+		</>
 	)
 }

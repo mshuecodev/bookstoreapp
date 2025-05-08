@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import { Platform } from "react-native"
-import { Box } from "@/components/ui"
+import { Box, SafeAreaView } from "@/components/ui"
 import ProfilePage from "../profile"
 import { Plus, Home, MessageCircle, User, SlidersHorizontal } from "lucide-react-native"
 import MobileModeChangeButton from "@/components/MobileModelChangeButton"
@@ -41,7 +41,7 @@ const HomeStayPage = () => {
 	}, [])
 
 	return (
-		<Box className="flex-1">
+		<Box className="flex-1 overflow-hidden">
 			<Box className="flex-1">
 				<ProfilePage isActive={activeTab === "Profile"} />
 
