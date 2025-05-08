@@ -39,8 +39,6 @@ function LoginScreen() {
 		resolver: zodResolver(loginSchema)
 	})
 
-	const [email, setEmail] = useState("")
-	const [password, setPassword] = useState("")
 	const [showPassword, setShowPassword] = useState(false)
 	const [validated, setValidated] = useState({
 		emailValid: true,
@@ -145,7 +143,7 @@ function LoginScreen() {
 									<InputField
 										placeholder="Enter email"
 										value={value}
-										onChangeText={onChange}
+										onChangeText={(text) => onChange(text.replace(/\s/g, ""))}
 										onBlur={onBlur}
 										onSubmitEditing={handleKeyPress}
 										returnKeyType="done"
