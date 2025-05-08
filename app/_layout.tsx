@@ -48,7 +48,6 @@ export default function RootLayout() {
 					<Provider store={store}>
 						<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
 							<PaperProvider>
-								{/* <Stack screenOptions={{ headerShown: false }} /> */}
 								<Slot />
 							</PaperProvider>
 						</ThemeProvider>

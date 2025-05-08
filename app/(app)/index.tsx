@@ -1,2 +1,3 @@
 import HomeScreen from "@/screens/home/index"
-export default HomeScreen
+import withDynamicBackground from "@/screens/layout/HomeLayout"
+export default withDynamicBackground(HomeScreen)
