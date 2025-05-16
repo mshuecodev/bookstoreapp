@@ -44,9 +44,9 @@ const HomeStayPage = () => {
 	}, [])
 
 	return (
-		<Box className="flex-1 overflow-hidden">
+		<Box className="flex-1 ">
+			<StatusBar />
 			<Box className="flex-1">
-				<StatusBar />
 				<HomePage
 					setActiveTab={setActiveTab}
 					activeTab={activeTab}
