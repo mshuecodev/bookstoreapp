@@ -1,10 +1,12 @@
 import React, { useEffect } from "react"
 import { Platform } from "react-native"
 import { Box, SafeAreaView } from "@/components/ui"
-import ProfilePage from "../profile"
-import { Plus, Home, MessageCircle, User, SlidersHorizontal } from "lucide-react-native"
+import { Plus, Home, User, BookOpen, ShoppingCart } from "lucide-react-native"
 import MobileModeChangeButton from "@/components/MobileModelChangeButton"
 import MobileBottomTabs from "@/components/MobileBottomTabs"
+import ProfilePage from "../profile"
+import CartScreen from "../cart"
+import CategoryScreen from "../category"
 
 const bottomTabs = [
 	{
@@ -12,18 +14,18 @@ const bottomTabs = [
 		label: "Home"
 	},
 	{
-		icon: SlidersHorizontal,
-		label: "Filter"
+		icon: BookOpen,
+		label: "Category"
 	},
 	{
-		icon: Plus,
-		label: "Listing"
+		icon: ShoppingCart,
+		label: "Cart"
 	},
-	{
-		icon: MessageCircle,
-		label: "Inbox",
-		disabled: true
-	},
+	// {
+	// 	icon: MessageCircle,
+	// 	label: "Inbox",
+	// 	disabled: true
+	// },
 	{
 		icon: User,
 		label: "Profile"
@@ -44,6 +46,8 @@ const HomeStayPage = () => {
 		<Box className="flex-1 overflow-hidden">
 			<Box className="flex-1">
 				<ProfilePage isActive={activeTab === "Profile"} />
+				<CartScreen isActive={activeTab === "Cart"} />
+				<CategoryScreen isActive={activeTab === "Category"} />
 
 				{/* <Explorepage
 					setActiveTab={setActiveTab}
