@@ -10,7 +10,7 @@ export * from "./button"
 // export * from './card';
 // export * from './center';
 export * from "./checkbox"
-// export * from './divider';
+export * from "./divider"
 export * from "./fab"
 // export * from './flat-list';
 export * from "./form-control"

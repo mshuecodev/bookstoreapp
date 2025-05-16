@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Platform } from "react-native"
+import { Platform, StatusBar } from "react-native"
 import { Box, SafeAreaView } from "@/components/ui"
 import { Plus, Home, User, BookOpen, ShoppingCart } from "lucide-react-native"
 import MobileModeChangeButton from "@/components/MobileModelChangeButton"
@@ -7,6 +7,7 @@ import MobileBottomTabs from "@/components/MobileBottomTabs"
 import ProfilePage from "../profile"
 import CartScreen from "../cart"
 import CategoryScreen from "../category"
+import HomePage from "./HomeComponent"
 
 const bottomTabs = [
 	{
@@ -45,9 +46,14 @@ const HomeStayPage = () => {
 	return (
 		<Box className="flex-1 overflow-hidden">
 			<Box className="flex-1">
+				<StatusBar />
+				<HomePage
+					setActiveTab={setActiveTab}
+					activeTab={activeTab}
+				/>
 				<ProfilePage isActive={activeTab === "Profile"} />
-				<CartScreen isActive={activeTab === "Cart"} />
-				<CategoryScreen isActive={activeTab === "Category"} />
+				{/* <CartScreen isActive={activeTab === "Cart"} /> */}
+				{/* <CategoryScreen isActive={activeTab === "Category"} /> */}
 
 				{/* <Explorepage
 					setActiveTab={setActiveTab}

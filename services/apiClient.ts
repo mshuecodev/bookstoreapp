@@ -4,7 +4,7 @@ import { getToken } from "./secureStoreService"
 // import { refreshAuthToken } from "@/features/auth/authSlice"
 
 const apiClient = axios.create({
-	baseURL: "http://192.168.251.130:5000",
+	baseURL: "http://192.168.72.130:5000",
 	// timeout: 10000,
 	headers: {
 		"Content-Type": "application/json"
