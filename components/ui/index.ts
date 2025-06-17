@@ -8,7 +8,7 @@ export * from "./avatar"
 export * from "./box"
 export * from "./button"
 // export * from './card';
-// export * from './center';
+export * from "./center"
 export * from "./checkbox"
 export * from "./divider"
 export * from "./fab"
