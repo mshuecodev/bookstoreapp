@@ -3,6 +3,7 @@ import { saveToken, deleteToken, saveRefreshToken, deleteRefreshToken, getRefres
 import { loginUser, refreshToken, registerUser } from "@/services/authService"
 import { AuthState } from "./authTypes"
 import { RegisterPayload } from "./authTypes"
+import { getToken } from "@/services/secureStoreService"
 
 // Initial state
 const initialState: AuthState = {
@@ -63,6 +64,30 @@ export const login = createAsyncThunk("auth/login", async (credentials: { email:
 // 	}
 // })
 
+export const rehydrateAuth = createAsyncThunk("auth/rehydrate", async (_, thunkAPI) => {
+	try {
+		let token: string | null = null
+		if (typeof window !== "undefined") {
+			// Web
+			token = await getToken()
+		} else {
+			// Native
+			token = await getToken()
+		}
+		console.log("rehydrateAuth", token)
+
+		if (token) {
+			// Optionally validate token with backend here
+			// const user = await fetchUserProfile(token)
+			return { accessToken: token /*, user*/ }
+		}
+
+		return thunkAPI.rejectWithValue("No token found")
+	} catch (error: any) {
+		return thunkAPI.rejectWithValue(error.message || "Rehydrate failed")
+	}
+})
+
 // Auth slice
 const authSlice = createSlice({
 	name: "auth",
@@ -80,6 +105,20 @@ const authSlice = createSlice({
 	extraReducers: (builder) => {
 		// Handle async thunks
 		builder
+			// rehydrateAuth
+			.addCase(rehydrateAuth.fulfilled, (state, action: PayloadAction<any>) => {
+				state.token = action.payload.accessToken
+				state.isAuthenticated = true
+				// state.user = action.payload.user || null
+				state.loading = false
+				state.error = null
+			})
+			.addCase(rehydrateAuth.rejected, (state) => {
+				state.token = null
+				state.isAuthenticated = false
+				state.user = null
+				state.loading = false
+			})
 			.addMatcher(
 				(action) => action.type.endsWith("/pending"),
 				(state) => {

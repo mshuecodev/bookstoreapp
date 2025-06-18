@@ -13,6 +13,9 @@ import { useColorScheme } from "@/hooks/useColorScheme"
 import { ThemeContext } from "@/context/Theme"
 import { SafeAreaView } from "@/components/ui"
 
+import { rehydrateAuth } from "@/features/auth/authSlice"
+import { useAppDispatch } from "@/store/hooks"
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
@@ -48,6 +51,7 @@ export default function RootLayout() {
 					<Provider store={store}>
 						<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
 							<PaperProvider>
+								<RehydrateAuth />
 								<Slot />
 							</PaperProvider>
 						</ThemeProvider>
@@ -56,4 +60,12 @@ export default function RootLayout() {
 			</ThemeContext.Provider>
 		</>
 	)
+}
+
+function RehydrateAuth() {
+	const dispatch = useAppDispatch()
+	useEffect(() => {
+		dispatch(rehydrateAuth())
+	}, [dispatch])
+	return null
 }
