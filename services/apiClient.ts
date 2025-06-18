@@ -2,9 +2,10 @@ import axios from "axios"
 import store from "@/store"
 import { getToken } from "./secureStoreService"
 // import { refreshAuthToken } from "@/features/auth/authSlice"
+const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:5000"
 
 const apiClient = axios.create({
-	baseURL: "http://192.168.72.130:5000",
+	baseURL: apiBaseUrl,
 	// timeout: 10000,
 	headers: {
 		"Content-Type": "application/json"

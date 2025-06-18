@@ -1,9 +1,9 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Keyboard, View } from "react-native"
-import { Box, Text, VStack, HStack, Spinner, Pressable, Heading } from "@/components/ui"
+import { Box, Text, VStack, HStack, Heading } from "@/components/ui"
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input"
 import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlLabel, FormControlLabelText } from "@/components/ui/form-control"
-import { ArrowLeftIcon, CheckIcon, EyeIcon, EyeOffIcon, Icon } from "@/components/ui/icon"
+import { CheckIcon, EyeIcon, EyeOffIcon } from "@/components/ui/icon"
 import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "@/components/ui/checkbox"
 import { Button, ButtonText, ButtonIcon } from "@/components/ui/button"
 import { LinkText, Link } from "@/components/ui/link"
@@ -16,6 +16,8 @@ import { useRouter } from "expo-router"
 import { AlertTriangle } from "lucide-react-native"
 import { GoogleIcon } from "@/assets/icons/google"
 import { AuthLayout } from "@/screens/layout"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { getRememberMe, saveRememberMe, deleteRememberMe } from "@/services/secureStoreService"
 
 const loginSchema = z.object({
 	email: z.string().min(1, "Email is required").email(),
@@ -26,7 +28,7 @@ const loginSchema = z.object({
 type LoginSchemaType = z.infer<typeof loginSchema>
 
 function LoginScreen() {
-	const { handleLogin, loading, error } = useAuth()
+	const { handleLogin, loading, error, isAuthenticated } = useAuth()
 	const router = useRouter()
 	const toast = useToast()
 
@@ -56,8 +58,15 @@ function LoginScreen() {
 			const success = await handleLogin(data.email, data.password)
 
 			if (success) {
+				// Remember Me logic
+				if (data.rememberme) {
+					await saveRememberMe(true)
+				} else {
+					await deleteRememberMe()
+				}
+
 				// Navigate to the protected home screen on successful login
-				router.push("/")
+				// router.replace("/")
 				toast.show({
 					placement: "bottom right",
 					render: ({ id }) => {
@@ -74,13 +83,42 @@ function LoginScreen() {
 				})
 				reset()
 			} else {
-				// Show an error message if login fails
-				// Alert.alert("Error", error || "Login failed. Please try again.")
+				// Handle login failure
+				toast.show({
+					placement: "bottom right",
+					render: ({ id }) => {
+						return (
+							<Toast
+								nativeID={id}
+								variant="solid"
+								action="error"
+							>
+								<ToastTitle>Login failed. Please try again.</ToastTitle>
+							</Toast>
+						)
+					}
+				})
 			}
 		} catch (err) {
-			// Handle unexpected errors
-			// Alert.alert("Error", "An unexpected error occurred. Please try again.")
 			console.error("Login error:", err)
+			toast.show({
+				placement: "bottom right",
+				render: ({ id }) => {
+					return (
+						<Toast
+							nativeID={id}
+							variant="solid"
+							action="error"
+						>
+							<ToastTitle>{error || "An error occurred during login."}</ToastTitle>
+						</Toast>
+					)
+				}
+			})
+			setValidated({
+				emailValid: false,
+				passwordValid: false
+			})
 		}
 	}
 
@@ -94,6 +132,13 @@ function LoginScreen() {
 			return !showState
 		})
 	}
+
+	// Redirect authenticated users away from login
+	useEffect(() => {
+		if (isAuthenticated) {
+			router.replace("/")
+		}
+	}, [isAuthenticated])
 
 	return (
 		<Box className="h-screen justify-center items-center bg-white px-4">
