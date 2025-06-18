@@ -47,11 +47,12 @@ const HomeStayPage = () => {
 		<Box className="flex-1 ">
 			<StatusBar />
 			<Box className="flex-1">
+				<ProfilePage isActive={activeTab === "Profile"} />
+
 				<HomePage
 					setActiveTab={setActiveTab}
 					activeTab={activeTab}
 				/>
-				<ProfilePage isActive={activeTab === "Profile"} />
 				{/* <CartScreen isActive={activeTab === "Cart"} /> */}
 				{/* <CategoryScreen isActive={activeTab === "Category"} /> */}
 

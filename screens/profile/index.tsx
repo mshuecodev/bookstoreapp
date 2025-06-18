@@ -1,15 +1,19 @@
-import React from "react"
+import React, { useState } from "react"
 import { HStack, Text, Heading, Avatar, VStack, Link, Icon, Pressable, Divider, Button, ButtonText, AvatarFallbackText, AvatarImage, LinkText } from "@/components/ui"
 import { Blinds, ChevronRight, Settings, Tablets, User, MessageCircleQuestionIcon, HeadsetIcon } from "lucide-react-native"
 import { ScrollView } from "react-native"
-// import LogoutAlertDialog from "./LogoutAlertDialog"
+import LogoutAlertDialog from "./LogoutAlertDialog"
 
 const MobileProfilePage = ({ isActive }: any) => {
-	const [openLogoutAlertDialog, setOpenLogoutAlertDialog] = React.useState(false)
+	const [openLogoutAlertDialog, setOpenLogoutAlertDialog] = useState(false)
+
 	return (
-		<ScrollView style={{ display: isActive ? "flex" : "none" }}>
+		<ScrollView
+			style={{ display: isActive ? "flex" : "none" }}
+			contentContainerStyle={{ alignItems: "flex-start", paddingBottom: 24 }}
+		>
 			<VStack
-				className="px-5 py-4 flex-1"
+				className="px-5 py-4 w-full"
 				space="lg"
 			>
 				<Heading className="mb-1">Profile</Heading>
@@ -26,10 +30,10 @@ const MobileProfilePage = ({ isActive }: any) => {
 					setOpenLogoutAlertDialog={setOpenLogoutAlertDialog}
 				/>
 			</VStack>
-			{/* <LogoutAlertDialog
+			<LogoutAlertDialog
 				setOpenLogoutAlertDialog={setOpenLogoutAlertDialog}
 				openLogoutAlertDialog={openLogoutAlertDialog}
-			/> */}
+			/>
 		</ScrollView>
 	)
 }
