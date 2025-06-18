@@ -6,9 +6,19 @@ export const loginUser = async (credentials: { email: string; password: string }
 	// Sending a POST request to the /auth/login endpoint with user credentials
 
 	const response = await apiClient.post<LoginResponse>("/auth/login", credentials)
-	console.log("auth services", response.data)
 
 	return response.data // Returns the access token and refresh token
+}
+
+export const logoutUser = async (token: string | null) => {
+	if (!token) return
+	await apiClient.post(
+		"/auth/logout",
+		{},
+		{
+			headers: { Authorization: `Bearer ${token}` }
+		}
+	)
 }
 
 export const refreshToken = async (refreshToken: string | null): Promise<RefreshTokenResponse> => {

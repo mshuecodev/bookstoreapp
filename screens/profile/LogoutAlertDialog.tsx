@@ -1,9 +1,17 @@
 import React from "react"
 import { Text, Heading, Icon, Button, CloseIcon, ButtonText, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter } from "@/components/ui"
+import { useAuth } from "@/features/auth/useAuth"
 
 const LogoutAlertDialog = ({ openLogoutAlertDialog, setOpenLogoutAlertDialog }: any) => {
+	const { handleLogout } = useAuth()
+
 	const handleClose = () => {
 		setOpenLogoutAlertDialog(false)
+	}
+
+	const handleLogoutAndClose = () => {
+		handleLogout()
+		handleClose()
 	}
 
 	return (
@@ -35,7 +43,7 @@ const LogoutAlertDialog = ({ openLogoutAlertDialog, setOpenLogoutAlertDialog }: 
 					</Button>
 					<Button
 						action="negative"
-						onPress={handleClose}
+						onPress={handleLogoutAndClose}
 					>
 						<ButtonText style={{ color: "fff" }}>Logout</ButtonText>
 					</Button>

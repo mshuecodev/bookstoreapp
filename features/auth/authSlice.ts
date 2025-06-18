@@ -48,6 +48,23 @@ export const login = createAsyncThunk("auth/login", async (credentials: { email:
 	}
 })
 
+export const logoutAsync = createAsyncThunk("auth/logoutAsync", async (_, thunkAPI) => {
+	try {
+		const state: any = thunkAPI.getState()
+		const token = state.auth.token
+		await logoutUser(token)
+		// Clear tokens from secure store
+		await deleteToken()
+		await deleteRefreshToken()
+		// Optionally: dispatch other slices' reset actions here
+		return true
+	} catch (error: any) {
+		await deleteToken()
+		await deleteRefreshToken()
+		return thunkAPI.rejectWithValue(error.message || "Logout failed")
+	}
+})
+
 // Async thunk for refreshing the token
 // export const refreshAuthToken = createAsyncThunk("auth/refreshToken", async (_, thunkAPI) => {
 // 	try {
@@ -74,7 +91,6 @@ export const rehydrateAuth = createAsyncThunk("auth/rehydrate", async (_, thunkA
 			// Native
 			token = await getToken()
 		}
-		console.log("rehydrateAuth", token)
 
 		if (token) {
 			// Optionally validate token with backend here
@@ -94,13 +110,13 @@ const authSlice = createSlice({
 	initialState,
 	reducers: {
 		// Logout action
-		logout: (state) => {
-			state.token = null
-			state.isAuthenticated = false
-			state.user = null
-			deleteToken()
-			deleteRefreshToken()
-		}
+		// logout: (state) => {
+		// 	state.token = null
+		// 	state.isAuthenticated = false
+		// 	state.user = null
+		// 	deleteToken()
+		// 	deleteRefreshToken()
+		// }
 	},
 	extraReducers: (builder) => {
 		// Handle async thunks
@@ -118,6 +134,20 @@ const authSlice = createSlice({
 				state.isAuthenticated = false
 				state.user = null
 				state.loading = false
+			})
+			.addCase(logoutAsync.fulfilled, (state) => {
+				state.token = null
+				state.isAuthenticated = false
+				state.user = null
+				state.loading = false
+				state.error = null
+			})
+			.addCase(logoutAsync.rejected, (state, action: PayloadAction<any>) => {
+				state.token = null
+				state.isAuthenticated = false
+				state.user = null
+				state.loading = false
+				state.error = action.payload
 			})
 			.addMatcher(
 				(action) => action.type.endsWith("/pending"),
@@ -149,5 +179,5 @@ const authSlice = createSlice({
 })
 
 // Export actions and reducer
-export const { logout } = authSlice.actions
+// export const { logout } = authSlice.actions
 export default authSlice.reducer
